@@ -30,5 +30,4 @@ run: .dockerimage
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
 	  --name makemkv \
-	  makemkv:latest \
-	  makemkvcon info dev:/dev/sr0 || true
+	  makemkv:latest

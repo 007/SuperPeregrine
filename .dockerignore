@@ -1,2 +1,4 @@
-mkv
-.git
+.git/
+mkv/
+inbound/
+outbound/

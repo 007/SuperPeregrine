@@ -32,3 +32,7 @@ COPY --from=builder /makemkv-bin-1.12.3/ /makemkv/bin/
 RUN cd /makemkv/bin && make install
 
 RUN rm -r /makemkv
+
+COPY ripper.sh /
+
+ENTRYPOINT ["/ripper.sh"]
