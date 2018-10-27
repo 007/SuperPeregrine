@@ -25,5 +25,5 @@ prodimage: clean Dockerfile
 image: Dockerfile .dockerimage
 
 run: .dockerimage
-	docker run --rm --name makemkv -it makemkv:latest makemkvcon || true
+	docker run --rm --name makemkv --device /dev/sr* --privileged -it makemkv:latest makemkvcon info dev:/dev/sr0 || true
 
