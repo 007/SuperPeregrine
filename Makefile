@@ -25,5 +25,10 @@ prodimage: clean Dockerfile
 image: Dockerfile .dockerimage
 
 run: .dockerimage
-	docker run --rm --name makemkv --device /dev/sr* --privileged -it makemkv:latest makemkvcon info dev:/dev/sr0 || true
-
+	docker run --rm --privileged --interactive --tty \
+	  --device /dev/sr* \
+	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
+	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
+	  --name makemkv \
+	  makemkv:latest \
+	  makemkvcon info dev:/dev/sr0 || true
