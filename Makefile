@@ -12,7 +12,7 @@ clean:
 	docker image rm --force makemkv:latest
 	docker image prune -f
 
-.dockerimage:
+.dockerimage: Dockerfile
 	docker build --rm --tag makemkv .
 	docker image prune -f
 	@touch .dockerimage
@@ -27,6 +27,7 @@ image: Dockerfile .dockerimage
 run: .dockerimage
 	docker run --rm --privileged --interactive --tty \
 	  --device /dev/sr* \
+	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
 	  --name makemkv \

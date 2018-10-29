@@ -19,7 +19,8 @@ RUN mkdir -p /root/.MakeMKV
 RUN lynx -dump 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -A1 'Select all' | tail -1 | awk '{print "app_Key = \"" $1 "\""}' > /root/.MakeMKV/settings.conf
 
 FROM ubuntu:18.04
-RUN apt-get update && apt-get install -y --no-install-recommends make libssl1.1 libavcodec57 libexpat1
+# makemkv requires libssl, libavcodec and libexpat
+RUN apt-get update && apt-get install -y --no-install-recommends handbrake-cli libavcodec57 libexpat1 libssl1.1 make
 
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 
@@ -35,4 +36,4 @@ RUN rm -r /makemkv
 
 COPY ripper.sh /
 
-ENTRYPOINT ["/ripper.sh"]
+CMD "/ripper.sh"
