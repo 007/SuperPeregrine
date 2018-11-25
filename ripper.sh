@@ -22,11 +22,13 @@ LAST_FILE="/inbound/last_file"
 echo "$(date) Started extracting ${TITLE_COUNT} tracks from ${DISC_LABEL} for ${DISC_DESCRIPTION}"
 echo "$(date) Using ${PRESET_NAME} from ${PRESET_FILE} for encoding"
 
+OUTBOUND_PREFIX="/outbound/${DISC_LABEL}"
+mkdir -p "${OUTBOUND_PREFIX}"
 # extract raw from disk for track N while re-encoding N-1
 for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
   MKV_FILE="$(awk -F, "/^TINFO:${TITLE},27/{print \$4}" < discinfo.txt | sed 's/"//g' )"
   INBOUND_FILE="/inbound/${MKV_FILE}"
-  OUTBOUND_FILE="/outbound/${MKV_FILE%.mkv}.mp4"
+  OUTBOUND_FILE="${OUTBOUND_PREFIX}/${MKV_FILE%.mkv}.mp4"
   #makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --robot --progress=-same mkv disc:0 ${TITLE} /inbound
   makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --progress=-same mkv disc:0 ${TITLE} /inbound
 
@@ -43,5 +45,7 @@ done
 # should this be FG instead?
 wait
 rm "${LAST_FILE}"
+
+chown 1000:1000 ${OUTBOUND_PREFIX}/*
 
 echo "$(date) Finished disc "
