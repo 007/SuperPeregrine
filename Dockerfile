@@ -21,7 +21,7 @@ RUN lynx -dump 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -
 
 FROM ubuntu:18.04
 # makemkv requires libssl, libavcodec and libexpat
-RUN apt-get update && apt-get install -y --no-install-recommends handbrake-cli libavcodec57 libexpat1 libssl1.1 make
+RUN apt-get update && apt-get install -y --no-install-recommends dvd+rw-tools handbrake-cli libavcodec57 libexpat1 libssl1.1 make
 
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 

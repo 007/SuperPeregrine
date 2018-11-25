@@ -18,7 +18,7 @@ clean:
 	@touch .dockerimage
 
 prodimage: clean Dockerfile
-	docker build --rm --pull --no-cache --squash --tag makemkv .
+	docker build --rm --pull --squash --tag makemkv .
 	docker image prune -f
 	@touch .dockerimage
 
