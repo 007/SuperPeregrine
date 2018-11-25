@@ -1,18 +1,19 @@
 FROM ubuntu:18.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
+ARG MAKEMKV_VERSION=1.14.1
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get dist-upgrade -y --auto-remove
 
 RUN apt-get install -y build-essential curl file libavcodec-dev libc6-dev libexpat1-dev libgl1-mesa-dev libqt4-dev libssl-dev lynx pkg-config zlib1g-dev
 
-RUN curl -s http://www.makemkv.com/download/makemkv-oss-1.12.3.tar.gz | tar xz
-RUN curl -s http://www.makemkv.com/download/makemkv-bin-1.12.3.tar.gz | tar xz
+RUN curl -s http://www.makemkv.com/download/makemkv-oss-${MAKEMKV_VERSION}.tar.gz | tar xz
+RUN curl -s http://www.makemkv.com/download/makemkv-bin-${MAKEMKV_VERSION}.tar.gz | tar xz
 
-WORKDIR /makemkv-oss-1.12.3/
+WORKDIR /makemkv-oss-${MAKEMKV_VERSION}/
 RUN ./configure && make
 
-WORKDIR /makemkv-bin-1.12.3/
+WORKDIR /makemkv-bin-${MAKEMKV_VERSION}/
 RUN mkdir tmp && echo accepted > tmp/eula_accepted
 
 RUN mkdir -p /root/.MakeMKV
@@ -25,11 +26,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends handbrake-cli l
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 
 COPY --from=builder /root/.MakeMKV/settings.conf /root/.MakeMKV/settings.conf
+ARG MAKEMKV_VERSION=1.14.1
 
-COPY --from=builder /makemkv-oss-1.12.3/ /makemkv/oss/
+COPY --from=builder /makemkv-oss-${MAKEMKV_VERSION}/ /makemkv/oss/
 RUN cd /makemkv/oss && make install
 
-COPY --from=builder /makemkv-bin-1.12.3/ /makemkv/bin/
+COPY --from=builder /makemkv-bin-${MAKEMKV_VERSION}/ /makemkv/bin/
 RUN cd /makemkv/bin && make install
 
 RUN rm -r /makemkv
