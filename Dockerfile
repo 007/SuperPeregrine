@@ -15,6 +15,7 @@ RUN ./configure && make
 
 WORKDIR /makemkv-bin-${MAKEMKV_VERSION}/
 RUN mkdir tmp && echo accepted > tmp/eula_accepted
+RUN curl -s http://ppa.launchpad.net/stebbins/handbrake-releases/ubuntu/pool/main/h/handbrake/handbrake-cli_1.1.2-zhb-1ppa1~bionic1_amd64.deb > handbrake.deb
 
 RUN mkdir -p /root/.MakeMKV
 RUN lynx -dump 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -A1 'Select all' | tail -1 | awk '{print "app_Key = \"" $1 "\""}' > /root/.MakeMKV/settings.conf
@@ -33,7 +34,7 @@ RUN cd /makemkv/oss && make install
 
 COPY --from=builder /makemkv-bin-${MAKEMKV_VERSION}/ /makemkv/bin/
 RUN cd /makemkv/bin && make install
-
+RUN dpkg -i /makemkv/bin/handbrake.deb
 RUN rm -r /makemkv
 
 COPY ripper.sh /
