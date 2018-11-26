@@ -9,16 +9,16 @@ help:
 
 clean:
 	@rm -f .dockerimage
-	docker image rm --force makemkv:latest
+	docker image rm --force superperegrine:latest
 	docker image prune -f
 
 .dockerimage: Dockerfile
-	docker build --rm --tag makemkv .
+	docker build --rm --tag superperegrine .
 	docker image prune -f
 	@touch .dockerimage
 
 prodimage: clean Dockerfile
-	docker build --rm --pull --squash --tag makemkv .
+	docker build --rm --pull --squash --tag superperegrine .
 	docker image prune -f
 	@touch .dockerimage
 
@@ -30,5 +30,5 @@ run: .dockerimage
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
-	  --name makemkv \
-	  makemkv:latest
+	  --name superperegrine \
+	  superperegrine:latest bash

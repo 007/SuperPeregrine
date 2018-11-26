@@ -1,4 +1,5 @@
-# BluRip
+# Super Peregrine
+(`Super Peregrine Lap Pro` is an anagram of `general purpose ripper`)
 
 BD to downsampled / transcoded MP4 via the magic of Docker
 
