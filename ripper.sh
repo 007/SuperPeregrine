@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 PRESET_FILE="${PRESET_FILE:-preset.json}"
 PRESET_NAME="${PRESET_NAME:-preset}"
 
@@ -71,7 +73,7 @@ echo "don't know what to do here, CSS library?"
   OUTBOUND_PREFIX="/outbound/${DISC_LABEL}"
   mkdir -p "${OUTBOUND_PREFIX}"
   # extract raw from disk for track N while re-encoding N-1
-  for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
+  for TITLE in $(seq 1 $TITLE_COUNT); do
     MKV_FILE="$(awk -F, "/^TINFO:${TITLE},27/{print \$4}" < discinfo.txt | sed 's/"//g' )"
     INBOUND_FILE="/inbound/${MKV_FILE}"
     OUTBOUND_FILE="${OUTBOUND_PREFIX}/${MKV_FILE%.mkv}.mp4"
