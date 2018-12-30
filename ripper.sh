@@ -80,6 +80,7 @@ echo "don't know what to do here, CSS library?"
   done
 }
 
+eject -t /dev/sr0 && sleep 10
 
 DISC_TYPE="$(dvd+rw-mediainfo /dev/sr0 | awk '/Mounted Media:/{print $4}')"
 
@@ -99,3 +100,5 @@ fi
 chown 1000:1000 ${OUTBOUND_PREFIX}/*
 
 echo "$(date) Finished disc "
+eject /dev/sr0
+
