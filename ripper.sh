@@ -82,7 +82,12 @@ echo "don't know what to do here, CSS library?"
   done
 }
 
-eject -t /dev/sr0 && sleep 10
+eject -t /dev/sr0
+
+sleep 5
+while ! eject -X /dev/sr0 ; do
+  sleep 5
+done
 
 DISC_TYPE="$(dvd+rw-mediainfo /dev/sr0 | awk '/Mounted Media:/{print $4}')"
 
