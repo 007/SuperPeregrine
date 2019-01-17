@@ -13,8 +13,8 @@ bluray() {
   makemkvcon --cache=1 --minlength=${MIN_LENGTH} --robot info disc:0 > discinfo.txt
 
   # extract text metadata
-  DISC_LABEL="$(awk -F, '/^CINFO:32,0,/{print $3}' < discinfo.txt | sed 's/"//g')"
-  DISC_DESCRIPTION="$(awk -F, '/^CINFO:2,0,/{print $3}' < discinfo.txt | sed 's/"//g')"
+  DISC_LABEL="$(awk -F\" '/^CINFO:32,0,/{print $2}' < discinfo.txt)"
+  DISC_DESCRIPTION="$(awk -F\" '/^CINFO:2,0,/{print $2}' < discinfo.txt)"
 
   # total number of tracks to rip
   TITLE_COUNT="$(awk -F: '/^TCOUNT:/{print $2}' < discinfo.txt)"
@@ -29,7 +29,7 @@ bluray() {
   mkdir -p "${OUTBOUND_PREFIX}"
   # extract raw from disk for track N while re-encoding N-1
   for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
-    MKV_FILE="$(awk -F, "/^TINFO:${TITLE},27/{print \$4}" < discinfo.txt | sed 's/"//g' )"
+    MKV_FILE="$(awk -F\" "/^TINFO:${TITLE},27/{print \$2}" < discinfo.txt)"
     INBOUND_FILE="/inbound/${MKV_FILE}"
     OUTBOUND_FILE="${OUTBOUND_PREFIX}/${MKV_FILE%.mkv}.mp4"
     #makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --robot --progress=-same mkv disc:0 ${TITLE} /inbound
