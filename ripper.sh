@@ -31,9 +31,12 @@ bluray() {
 
   # extract raw from disk for track N while re-encoding N-1
   for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
-    MKV_FILE="$(awk -F\" "/^TINFO:${TITLE},27/{print \$2}" < discinfo.txt)"
+    MKV_FILE="$(awk -F\" "/^TINFO:${TITLE},27,/{print \$2}" < discinfo.txt)"
+    TITLE_DURATION="$(awk -F\" "/^TINFO:${TITLE},9,/{print \$2}" < discinfo.txt)"
     INBOUND_FILE="/inbound/${MKV_FILE}"
     OUTBOUND_FILE="${OUTBOUND_PREFIX}/${MKV_FILE%.mkv}.mp4"
+
+    echo "extracting title ${TITLE} (${TITLE_DURATION}) to ${OUTBOUND_FILE}"
     #makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --robot --progress=-same mkv disc:0 ${TITLE} /inbound
     makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --progress=-same mkv disc:0 ${TITLE} /inbound
 
