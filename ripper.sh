@@ -27,6 +27,8 @@ bluray() {
 
   OUTBOUND_PREFIX="/outbound/${DISC_LABEL}"
   mkdir -p "${OUTBOUND_PREFIX}"
+  cp discinfo.txt "${OUTBOUND_PREFIX}"
+
   # extract raw from disk for track N while re-encoding N-1
   for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
     MKV_FILE="$(awk -F\" "/^TINFO:${TITLE},27/{print \$2}" < discinfo.txt)"
