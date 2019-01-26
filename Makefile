@@ -1,9 +1,10 @@
-default: help
+default: rip
 
 help:
 	@echo "Popular Make Targets:"
 	@echo "   image - build docker image"
-	@echo "   run   - run shell in built image"
+	@echo "   rip   - run ripper"
+	@echo "   bash  - run shell in built image"
 
 .PHONY: clean
 
@@ -24,7 +25,16 @@ prodimage: clean Dockerfile
 
 image: Dockerfile .dockerimage
 
-run: .dockerimage
+rip: .dockerimage
+	docker run --rm --privileged --interactive --tty \
+	  --device /dev/sr* \
+	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
+	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
+	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
+	  --name superperegrine \
+	  superperegrine:latest
+
+bash:
 	docker run --rm --privileged --interactive --tty \
 	  --device /dev/sr* \
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
