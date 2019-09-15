@@ -1,7 +1,7 @@
 FROM ubuntu:18.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG MAKEMKV_VERSION=1.14.2
+ARG MAKEMKV_VERSION=1.14.5
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get dist-upgrade -y --auto-remove
 
@@ -15,7 +15,7 @@ RUN ./configure && make
 
 WORKDIR /makemkv-bin-${MAKEMKV_VERSION}/
 RUN mkdir tmp && echo accepted > tmp/eula_accepted
-RUN wget -q -O handbrake.deb http://ppa.launchpad.net/stebbins/handbrake-releases/ubuntu/pool/main/h/handbrake/handbrake-cli_1.2.0-zhb-1ppa1~bionic1_amd64.deb
+RUN wget -q -O handbrake.deb http://ppa.launchpad.net/stebbins/handbrake-releases/ubuntu/pool/main/h/handbrake/handbrake-cli_1.2.1-zhb-1ppa1~bionic1_amd64.deb
 RUN wget -q -O libdvdcss2.deb http://download.videolan.org/pub/ubuntu/stable/libdvdcss2_1.2.13-0_amd64.deb
 RUN mkdir -p /root/.MakeMKV
 RUN lynx -dump 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -A1 'Select all' | tail -1 | awk '{print "app_Key = \"" $1 "\""}' > /root/.MakeMKV/settings.conf
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends dvd+rw-tools ej
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 
 COPY --from=builder /root/.MakeMKV/settings.conf /root/.MakeMKV/settings.conf
-ARG MAKEMKV_VERSION=1.14.2
+ARG MAKEMKV_VERSION=1.14.5
 
 COPY --from=builder /makemkv-oss-${MAKEMKV_VERSION}/ /makemkv/oss/
 RUN cd /makemkv/oss && make install
