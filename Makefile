@@ -29,6 +29,8 @@ rip: .dockerimage
 	docker run --rm --privileged --interactive --tty \
 	  --device /dev/sr* \
 	  --env MIN_LENGTH=600 \
+	  --env UID=$(shell id -u) \
+	  --env GID=$(shell id -g) \
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
