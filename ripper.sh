@@ -10,7 +10,8 @@ MIN_LENGTH="${MIN_LENGTH:-1000}"
 
 bluray() {
   # extract disc info
-  makemkvcon --cache=1 --minlength=${MIN_LENGTH} --robot info disc:0 > discinfo.txt
+  makemkvcon --cache=100 --minlength=${MIN_LENGTH} --robot info disc:0 > discinfo.txt
+  head -20 discinfo.txt
 
   # extract text metadata
   DISC_LABEL="$(awk -F\" '/^CINFO:32,0,/{print $2}' < discinfo.txt)"
