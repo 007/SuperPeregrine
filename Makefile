@@ -28,6 +28,7 @@ image: Dockerfile .dockerimage
 rip: .dockerimage
 	docker run --rm --privileged --interactive --tty \
 	  --device /dev/sr* \
+	  --env MIN_LENGTH=600 \
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \

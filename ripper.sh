@@ -6,7 +6,7 @@ PRESET_FILE="${PRESET_FILE:-preset.json}"
 PRESET_NAME="${PRESET_NAME:-preset}"
 
 # tracks need to be at least 16 minutes 40 seconds
-MIN_LENGTH=1000
+MIN_LENGTH="${MIN_LENGTH:-1000}"
 
 bluray() {
   # extract disc info
