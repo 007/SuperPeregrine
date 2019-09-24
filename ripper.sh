@@ -106,7 +106,7 @@ fi
 
 
 sync
-chown -R ${UID:-1000}:${GID:-1001} "${OUTBOUND_PREFIX}"/*
+chown -R ${UID:-1000}:${GID:-1001} "${OUTBOUND_PREFIX}"
 
 echo "$(date) Finished disc "
 eject /dev/sr0
