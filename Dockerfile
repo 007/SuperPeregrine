@@ -1,7 +1,7 @@
 FROM ubuntu:18.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG MAKEMKV_VERSION=1.14.5
+ARG MAKEMKV_VERSION=1.14.7
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get dist-upgrade -y --auto-remove
 
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends dvd+rw-tools ej
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 
 COPY --from=builder /root/.MakeMKV/settings.conf /root/.MakeMKV/settings.conf
-ARG MAKEMKV_VERSION=1.14.5
+ARG MAKEMKV_VERSION=1.14.7
 
 COPY --from=builder /makemkv-oss-${MAKEMKV_VERSION}/ /makemkv/oss/
 RUN cd /makemkv/oss && make install
