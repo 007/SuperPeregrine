@@ -46,7 +46,7 @@
       "Default": false,
       "PictureDenoiseCustom": "",
       "VideoGrayScale": false,
-      "VideoFramerate": "29.97",
+      "VideoFramerate": "23.976",
       "PictureDetelecineCustom": "",
       "Folder": false,
       "AudioCopyMask": [
