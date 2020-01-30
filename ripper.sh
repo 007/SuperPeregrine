@@ -80,6 +80,7 @@ dvd() {
     OUTBOUND_FILE="${OUTBOUND_PREFIX}/title_${TITLE}.mp4"
     HandBrakeCLI --preset-import-file /presets/${PRESET_FILE} --preset ${PRESET_NAME} --input /dev/sr0 --title ${TITLE} --optimize --output "${OUTBOUND_FILE}"
     touch "${OUTBOUND_FILE}"
+    chown ${UID:-1000}:${GID:-1001} "${OUTBOUND_FILE}"
   done
 }
 
