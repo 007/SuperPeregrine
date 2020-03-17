@@ -7,8 +7,8 @@ RUN apt-get dist-upgrade -y --auto-remove
 
 RUN apt-get install -y build-essential file libavcodec-dev libc6-dev libexpat1-dev libgl1-mesa-dev libqt4-dev libssl-dev lynx pkg-config wget zlib1g-dev
 
-RUN wget -q -O - http://www.makemkv.com/download/makemkv-oss-${MAKEMKV_VERSION}.tar.gz | tar xz
-RUN wget -q -O - http://www.makemkv.com/download/makemkv-bin-${MAKEMKV_VERSION}.tar.gz | tar xz
+RUN wget -q -O - http://www.makemkv.com/download/old/makemkv-oss-${MAKEMKV_VERSION}.tar.gz | tar xz
+RUN wget -q -O - http://www.makemkv.com/download/old/makemkv-bin-${MAKEMKV_VERSION}.tar.gz | tar xz
 
 WORKDIR /makemkv-oss-${MAKEMKV_VERSION}/
 RUN ./configure && make
