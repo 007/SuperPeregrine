@@ -34,7 +34,6 @@ rip: .dockerimage
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
-	  --name superperegrine \
 	  superperegrine:latest
 
 bash:
@@ -43,5 +42,4 @@ bash:
 	  --mount type=bind,source="$(shell pwd)"/presets,target=/presets \
 	  --mount type=bind,source="$(shell pwd)"/inbound,target=/inbound \
 	  --mount type=bind,source="$(shell pwd)"/outbound,target=/outbound \
-	  --name superperegrine \
 	  superperegrine:latest bash
