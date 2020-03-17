@@ -99,6 +99,8 @@ if [ "${DISC_TYPE}" = "BD-ROM" ]; then
   bluray
 elif [ "${DISC_TYPE}" = "DVD-ROM" ] ; then
   dvd
+elif [ "${DISC_TYPE}" = "DVD+R" ] ; then
+  dvd
 else
   echo "Unknown media type ${DISC_TYPE}"
   echo "This may help?"
