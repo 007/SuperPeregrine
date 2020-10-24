@@ -14,12 +14,12 @@ clean:
 	docker image prune -f
 
 .dockerimage: Dockerfile
-	docker build --rm --tag superperegrine .
+	docker build --rm --tag superperegrine --build-arg MAKEMKV_VERSION=1.15.3 .
 	docker image prune -f
 	@touch .dockerimage
 
 prodimage: clean Dockerfile
-	docker build --rm --pull --squash --tag superperegrine .
+	docker build --rm --pull --squash --tag superperegrine --build-arg MAKEMKV_VERSION=1.15.3 .
 	docker image prune -f
 	@touch .dockerimage
 

@@ -1,7 +1,6 @@
 FROM ubuntu:20.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG MAKEMKV_VERSION=1.15.1
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get dist-upgrade -y --auto-remove
 
@@ -10,6 +9,8 @@ RUN apt-get install -y build-essential file lynx pkg-config wget
 
 # install makemkv-specific build requirements
 RUN apt-get install -y libavcodec-dev libexpat1-dev libssl-dev zlib1g-dev
+
+ARG MAKEMKV_VERSION
 RUN wget -q -O - http://www.makemkv.com/download/makemkv-oss-${MAKEMKV_VERSION}.tar.gz | tar xz
 RUN wget -q -O - http://www.makemkv.com/download/makemkv-bin-${MAKEMKV_VERSION}.tar.gz | tar xz
 
@@ -31,13 +32,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends dvd+rw-tools ej
 RUN mkdir -p /makemkv/oss /makemkv/bin /root/.MakeMKV
 
 COPY --from=builder /root/.MakeMKV/settings.conf /root/.MakeMKV/settings.conf
-ARG MAKEMKV_VERSION=1.15.1
 
+ARG MAKEMKV_VERSION
 COPY --from=builder /makemkv-oss-${MAKEMKV_VERSION}/ /makemkv/oss/
 RUN cd /makemkv/oss && make install
 
 COPY --from=builder /makemkv-bin-${MAKEMKV_VERSION}/ /makemkv/bin/
 RUN cd /makemkv/bin && make install
+#RUN dpkg -i /makemkv/bin/handbrake.deb
 RUN dpkg -i /makemkv/bin/libdvdcss2.deb
 RUN rm -r /makemkv
 
