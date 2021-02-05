@@ -39,7 +39,7 @@ ARG MAKEMKV_VERSION
 COPY --from=builder /makemkv-oss-${MAKEMKV_VERSION}/ /makemkv/oss/
 
 # makemkv requires libssl, libavcodec and libexpat
-RUN apt-get update && apt-get install -y --no-install-recommends libavcodec-extra libexpat1 libssl1.1 make && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends default-jre libavcodec-extra libexpat1 libssl1.1 make && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN make -C /makemkv/oss install
 

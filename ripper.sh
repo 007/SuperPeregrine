@@ -2,11 +2,11 @@
 
 set -x
 
-PRESET_FILE="${PRESET_FILE:-preset.json}"
-PRESET_NAME="${PRESET_NAME:-preset}"
-
-# tracks need to be at least 16 minutes 40 seconds
+# tracks need to be at least 1 hour by default
 MIN_LENGTH="${MIN_LENGTH:-1000}"
+CRF="${CRF:-20}"
+
+TEMP_DIR=/inbound
 
 bluray() {
   # extract disc info
@@ -17,71 +17,37 @@ bluray() {
   DISC_LABEL="$(awk -F\" '/^CINFO:32,0,/{print $2}' < discinfo.txt)"
   DISC_DESCRIPTION="$(awk -F\" '/^CINFO:2,0,/{print $2}' < discinfo.txt)"
 
+  CLEAN_DESCRIPTION="$(tr -cd A-Za-z0-9\ <<< \"${DISC_DESCRIPTION}\")"
+  echo "$(date) Clean filename would be \"$CLEAN_DESCRIPTION.mkv\""
+
   # total number of tracks to rip
   TITLE_COUNT="$(awk -F: '/^TCOUNT:/{print $2}' < discinfo.txt)"
 
-  # file being encoded for step N-1
-  LAST_FILE="/inbound/last_file"
-
   echo "$(date) Started extracting ${TITLE_COUNT} tracks from ${DISC_LABEL} for ${DISC_DESCRIPTION}"
-  echo "$(date) Using ${PRESET_NAME} from ${PRESET_FILE} for encoding"
 
   OUTBOUND_PREFIX="/outbound/${DISC_LABEL}"
   mkdir -p "${OUTBOUND_PREFIX}"
-  cp discinfo.txt "${OUTBOUND_PREFIX}"
+  #cp discinfo.txt "${OUTBOUND_PREFIX}"
 
-  # extract raw from disk for track N while re-encoding N-1
-  for TITLE in $(seq 0 $((TITLE_COUNT - 1))); do
-    MKV_FILE="$(awk -F\" "/^TINFO:${TITLE},27,/{print \$2}" < discinfo.txt)"
-    TITLE_DURATION="$(awk -F\" "/^TINFO:${TITLE},9,/{print \$2}" < discinfo.txt)"
-    INBOUND_FILE="/inbound/${MKV_FILE}"
-    OUTBOUND_FILE="${OUTBOUND_PREFIX}/${MKV_FILE%.mkv}.mp4"
+  MKV_FILE="$(awk -F\" "/^TINFO:0,27,/{print \$2}" < discinfo.txt)"
+  TITLE_DURATION="$(awk -F\" "/^TINFO:0,9,/{print \$2}" < discinfo.txt)"
+  INBOUND_FILE="${TEMP_DIR}/${MKV_FILE}"
+  OUTBOUND_FILE="${OUTBOUND_PREFIX}/${CLEAN_DESCRIPTION}.mkv"
 
-    echo "extracting title ${TITLE} (${TITLE_DURATION}) to ${OUTBOUND_FILE}"
-    #makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --robot --progress=-same mkv disc:0 ${TITLE} /inbound
-    makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --progress=-same mkv disc:0 ${TITLE} /inbound
+  echo ""
+  echo "extracting title 0 (${TITLE_DURATION}) to ${OUTBOUND_FILE}"
+  echo ""
+  makemkvcon --cache=1024 --minlength=${MIN_LENGTH} --decrypt --progress=-same mkv disc:0 0 "${TEMP_DIR}"
 
-    # wait for last encoding to finish so we can clean up and process next one
-    wait
-    rm "${LAST_FILE}"
-    LAST_FILE=${INBOUND_FILE}
-    # run this in the background so we can extract next file while it processes
-    HandBrakeCLI --preset-import-file /presets/${PRESET_FILE} --preset ${PRESET_NAME} --input "${INBOUND_FILE}" --optimize --output "${OUTBOUND_FILE}" &
-    sleep 60
-  done
-
-  # wait for the final encoding to complete
-  # should this be FG instead?
-  wait
-  rm "${LAST_FILE}"
+  # TODO: put this back in when we're not doing raw rips anymore
+  # CROP_FACTOR="$( ffmpeg -ss 314 -i "${INBOUND_FILE}" -t 314 -vf cropdetect -map 0:0 -f null - 2>&1 | awk '/Parsed_cropdetect/{print $14}' | tail -1 )"
+  # ffmpeg -hide_banner -i "${INBOUND_FILE}" -c:v libx265 -crf $CRF -level 4.1 -aq-mode 3 -aq-strength 0.8 -psy-rd 0.8:0:0 -deblock -3:-3 -vf "${CROP_FACTOR}" -c:a eac3 -b:a 640k -map 0:0 -map 0:1 -map_metadata -1 -metadata:s:a:0 language=eng -metadata:s:v:0 language=eng -preset slower "${OUTBOUND_FILE}"
+  ffmpeg -hide_banner -i "${INBOUND_FILE}" -c:v copy -c:a copy -c:s copy -movflags +faststart -map_metadata -1 -metadata:s:a:0 language=eng -metadata:s:s:0 language=eng -map 0:v:0 -map 0:a:0 -map 0:s:0? -async 1 -vsync 1 "${OUTBOUND_FILE}"
+  rm "${INBOUND_FILE}"
 }
 
 dvd() {
-  # extract disc info
-  makemkvcon --cache=100 --minlength=${MIN_LENGTH} --robot info disc:0 > discinfo.txt
-  head -20 discinfo.txt
-
-  # extract text metadata
-  DISC_LABEL="$(awk -F, '/^CINFO:32,0,/{print $3}' < discinfo.txt | sed 's/"//g')"
-  DISC_DESCRIPTION="$(awk -F, '/^CINFO:2,0,/{print $3}' < discinfo.txt | sed 's/"//g')"
-
-  # total number of tracks to rip
-  TITLE_COUNT="$(awk -F: '/^TCOUNT:/{print $2}' < discinfo.txt)"
-
-  echo "$(date) Started extracting ${TITLE_COUNT} tracks from ${DISC_LABEL} for ${DISC_DESCRIPTION}"
-  echo "$(date) Using ${PRESET_NAME} from ${PRESET_FILE} for encoding"
-
-  OUTBOUND_PREFIX="/outbound/${DISC_LABEL}"
-  mkdir -p "${OUTBOUND_PREFIX}"
-  cp discinfo.txt "${OUTBOUND_PREFIX}"
-
-  # extract by title vs by sequence
-  for TITLE in $(awk -F, '/MSG:3028/{print $8}'< discinfo.txt | sed 's/"//g'); do
-    OUTBOUND_FILE="${OUTBOUND_PREFIX}/title_${TITLE}.mp4"
-    HandBrakeCLI --preset-import-file /presets/${PRESET_FILE} --preset ${PRESET_NAME} --input /dev/sr0 --title ${TITLE} --optimize --output "${OUTBOUND_FILE}"
-    touch "${OUTBOUND_FILE}"
-    chown ${UID:-1000}:${GID:-1001} "${OUTBOUND_FILE}"
-  done
+  echo "DVD ripping is not supported directly, use shell to work around"
 }
 
 eject -t /dev/sr0
